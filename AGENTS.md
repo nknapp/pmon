@@ -53,7 +53,7 @@ repositories, providing real-time status updates and desktop notifications for f
 
 ### Backend (Rust)
 
-- **Plugin System**: Data provider trait with compile-time feature selection
+- **Plugin System**: Generic data provider trait with compile-time feature selection
 - **GitHub Provider**: `octocrab` crate for REST API integration
 - **Real-time Polling**: Tokio async tasks (30-60 second intervals)
 - **Configuration**: YAML config with JSON schema validation
@@ -78,6 +78,56 @@ repositories, providing real-time status updates and desktop notifications for f
 
 ## Plugin Architecture
 
+### Generic Data Models
+
+```rust
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Run {
+    pub id: String,
+    pub name: String,
+    pub description: Option<String>,
+    pub url: Option<String>,
+    pub status: RunStatus,
+    pub started_at: DateTime<Utc>,
+    pub completed_at: Option<DateTime<Utc>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum RunStatus {
+    Success,
+    Failed,
+    Running,
+    Aborted,
+    Pending,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WorkflowStream {
+    pub id: String,
+    pub name: String,
+    pub description: Option<String>,
+    pub runs: Vec<Run>,
+    pub current_run: Option<Run>,
+    pub previous_run: Option<Run>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum Target {
+    Branch(String),
+    PullRequest { number: u64, title: String },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Repository {
+    pub id: String,
+    pub name: String,
+    pub owner: String,
+    pub url: String,
+    pub targets: Vec<Target>,
+    pub workflow_streams: Vec<WorkflowStream>,
+}
+```
+
 ### Data Provider Trait
 
 ```rust
@@ -87,9 +137,9 @@ pub trait DataProvider: Send + Sync {
     fn version(&self) -> &'static str;
     
     async fn authenticate(&mut self, config: &ProviderConfig) -> Result<(), ProviderError>;
-    async fn list_workflows(&self, repo: &RepositoryConfig) -> Result<Vec<Workflow>, ProviderError>;
-    async fn get_workflow_runs(&self, repo: &RepositoryConfig) -> Result<Vec<WorkflowRun>, ProviderError>;
-    async fn get_run_details(&self, run_id: &str) -> Result<WorkflowRunDetails, ProviderError>;
+    async fn list_repositories(&self, config: &AppConfig) -> Result<Vec<Repository>, ProviderError>;
+    async fn get_workflow_streams(&self, repo: &Repository) -> Result<Vec<WorkflowStream>, ProviderError>;
+    async fn update_stream(&self, stream: &mut WorkflowStream) -> Result<(), ProviderError>;
     
     fn config_schema(&self) -> JsonSchema;
 }
@@ -187,11 +237,11 @@ notifications:
 
 ### Configuration Features
 
-- **Hierarchical Structure**: Global, GitHub, repository, and workflow settings
+- **Hierarchical Structure**: Global, provider, repository, and workflow settings
 - **Pattern Matching**: Monitor multiple workflows with regex patterns
-- **Branch Filtering**: Control which branches to monitor
-- **PR Monitoring**: Separate control for PR vs main branch workflows
+- **Target Filtering**: Control which branches/PRs to monitor
 - **Selective Notifications**: Configure failure/success notifications per workflow
+- **Provider Abstraction**: Generic configuration that works for any provider
 - **IDE Support**: Auto-completion and validation via JSON schema
 - **Security**: Environment variable tokens, never stored in config
 
@@ -202,19 +252,42 @@ notifications:
 - **Runtime Validation**: `serde_json` for config validation
 - **Error Handling**: Clear validation error messages
 
+## Data Model Hierarchy
+
+```
+Repository
+├── Targets (Branches & Pull Requests)
+│   ├── Branch "main"
+│   ├── Branch "develop"
+│   └── Pull Request #123
+└── Workflow Streams
+    ├── CI Stream
+    │   ├── Current Run (Running)
+    │   └── Previous Run (Success/Failed)
+    ├── Deploy Stream
+    │   └── Current Run (Success)
+    └── Tests Stream
+        └── Current Run (Failed)
+```
+
 ## API Integration
 
-### GitHub API Endpoints
+### Provider-Specific Endpoints
 
+#### GitHub API
 - `GET /repos/{owner}/{repo}/actions/workflows` - List workflows
 - `GET /repos/{owner}/{repo}/actions/runs` - Get recent runs
 - `GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs` - Get job details
 
+#### Future GitLab API
+- `GET /projects/{id}/pipelines` - List pipelines
+- `GET /projects/{id}/jobs` - Get job details
+
 ### Polling Strategy
 
-- **Background Tasks**: Async Tokio tasks
+- **Background Tasks**: Async Tokio tasks per provider
 - **State Tracking**: Store last known state to detect changes
-- **Rate Limiting**: Respect GitHub API limits
+- **Rate Limiting**: Respect provider-specific API limits
 - **Prioritization**: Main branch and recent PR workflows
 
 ## Development Plan
