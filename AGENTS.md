@@ -53,11 +53,11 @@ repositories, providing real-time status updates and desktop notifications for f
 
 ### Backend (Rust)
 
-- **Plugin System**: Generic data provider trait with compile-time feature selection
-- **GitHub Provider**: `octocrab` crate for REST API integration
-- **Real-time Polling**: Tokio async tasks (30-60 second intervals)
-- **Configuration**: YAML config with JSON schema validation
+- **Core API**: Passive system receiving data from plugins
+- **Plugin System**: Data providers manage their own update strategies
+- **GitHub Provider**: `octocrab` crate with polling implementation
 - **State Management**: In-memory with disk persistence
+- **Event Bus**: Internal communication between core and frontend
 - **Security**: Token encryption, system keychain storage
 
 ### Frontend (Vue.js + TypeScript)
@@ -137,11 +137,19 @@ pub trait DataProvider: Send + Sync {
     fn version(&self) -> &'static str;
     
     async fn authenticate(&mut self, config: &ProviderConfig) -> Result<(), ProviderError>;
-    async fn list_repositories(&self, config: &AppConfig) -> Result<Vec<Repository>, ProviderError>;
-    async fn get_workflow_streams(&self, repo: &Repository) -> Result<Vec<WorkflowStream>, ProviderError>;
-    async fn update_stream(&self, stream: &mut WorkflowStream) -> Result<(), ProviderError>;
+    async fn start_monitoring(&mut self, core_api: Box<dyn CoreApi>) -> Result<(), ProviderError>;
+    async fn stop_monitoring(&mut self) -> Result<(), ProviderError>;
     
     fn config_schema(&self) -> JsonSchema;
+}
+
+/// Core API that plugins use to push data updates
+#[async_trait]
+pub trait CoreApi: Send + Sync {
+    async fn update_repository(&self, repository: Repository) -> Result<(), CoreError>;
+    async fn update_workflow_stream(&self, repo_id: &str, stream: WorkflowStream) -> Result<(), CoreError>;
+    async fn update_run(&self, repo_id: &str, stream_id: &str, run: Run) -> Result<(), CoreError>;
+    async fn notify(&self, notification: Notification) -> Result<(), CoreError>;
 }
 ```
 
@@ -283,22 +291,35 @@ Repository
 - `GET /projects/{id}/pipelines` - List pipelines
 - `GET /projects/{id}/jobs` - Get job details
 
-### Polling Strategy
+### Plugin Update Strategies
 
-- **Background Tasks**: Async Tokio tasks per provider
+#### Polling-based (e.g., GitHub REST API)
+- **Background Tasks**: Async Tokio tasks polling at intervals
 - **State Tracking**: Store last known state to detect changes
 - **Rate Limiting**: Respect provider-specific API limits
 - **Prioritization**: Main branch and recent PR workflows
+
+#### Real-time (e.g., GitHub Webhooks, GitLab Websockets)
+- **Webhook Servers**: Receive immediate updates from providers
+- **WebSocket Connections**: Persistent connections for live data
+- **Event Processing**: Handle incoming workflow events immediately
+- **Push-based Updates**: No polling overhead
+
+#### Hybrid Approaches
+- **Webhook + Polling**: Webhooks for immediate updates, polling for catch-up
+- **Smart Polling**: Adaptive intervals based on activity
+- **Batch Updates**: Efficient bulk updates during idle periods
 
 ## Development Plan
 
 ### Phase 1: Core Infrastructure
 
 1. **Setup Tauri project** with Vue.js + TypeScript frontend
-2. **Implement plugin architecture** with data provider trait
-3. **Create GitHub provider** as first plugin implementation
-4. **Basic dashboard UI** showing repository list
-5. **Configuration system** with YAML schema validation
+2. **Implement plugin architecture** with Core API and DataProvider trait
+3. **Create GitHub provider** with polling implementation
+4. **Implement Core API** for data reception and event broadcasting
+5. **Basic dashboard UI** showing repository list
+6. **Configuration system** with YAML schema validation
 
 ### Phase 2: Monitoring Features
 
