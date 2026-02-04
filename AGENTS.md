@@ -20,9 +20,16 @@ repositories, providing real-time status updates and desktop notifications for f
 ### Core: Tauri + Rust
 
 - **Why chosen**: Lightweight (~10MB), secure, performant, cross-platform
-- **Frontend**: Web-based (React/Vue/Svelte) for UI
+- **Frontend**: Vue.js with TypeScript for UI
 - **Backend**: Rust for API calls and system integration
 - **Notifications**: Native OS notifications via Tauri APIs
+
+### Plugin Architecture: Cargo Features
+
+- **Why chosen**: Type-safe, zero-overhead, compile-time guarantees
+- **Core plugins**: GitHub provider compiled via Cargo features
+- **Future extensibility**: Easy to add new data providers as features
+- **No dynamic loading**: Simpler deployment, better performance
 
 ### Alternative Platforms Considered
 
@@ -33,22 +40,33 @@ repositories, providing real-time status updates and desktop notifications for f
 | Electron + Node.js  | Web tech familiar               | Heavy resource usage | Overkill               |
 | Go + Fyne/Wails     | Simple deployment               | Smaller UI ecosystem | Viable but less mature |
 
+### Frontend Frameworks Considered
+
+| Framework         | Pros                            | Cons                      | Decision               |
+|-------------------|---------------------------------|---------------------------|------------------------|
+| **Vue.js**        | Simple learning curve, reactive   | Smaller ecosystem than React | ✅ Selected             |
+| React             | Large ecosystem, popular         | More complex               | Good alternative       |
+| Svelte            | Performant, less boilerplate     | Smaller ecosystem          | Viable but less mature |
+| Angular           | Enterprise features, opinionated   | Complex, heavy             | Overkill               |
+
 ## Architecture
 
 ### Backend (Rust)
 
-- **GitHub API Client**: `octocrab` crate for REST API integration
+- **Plugin System**: Data provider trait with compile-time feature selection
+- **GitHub Provider**: `octocrab` crate for REST API integration
 - **Real-time Polling**: Tokio async tasks (30-60 second intervals)
 - **Configuration**: YAML config with JSON schema validation
 - **State Management**: In-memory with disk persistence
 - **Security**: Token encryption, system keychain storage
 
-### Frontend (Web)
+### Frontend (Vue.js + TypeScript)
 
 - **Dashboard View**: Grid showing workflow statuses across projects
 - **Real-time Updates**: WebSocket connection from backend
 - **Quick Actions**: "Open in Browser" buttons for failed workflows
-- **Configuration UI**: Repository management and settings
+- **Component-based Architecture**: Vue 3 Composition API with TypeScript
+- **Reactive State**: Pinia for state management
 
 ### Key Features
 
@@ -57,6 +75,72 @@ repositories, providing real-time status updates and desktop notifications for f
 3. **Quick Open**: Direct links to workflow URLs in browser
 4. **Native Notifications**: OS-level alerts for failures
 5. **Configuration Management**: UI for managing monitored repos
+
+## Plugin Architecture
+
+### Data Provider Trait
+
+```rust
+#[async_trait]
+pub trait DataProvider: Send + Sync {
+    fn name(&self) -> &'static str;
+    fn version(&self) -> &'static str;
+    
+    async fn authenticate(&mut self, config: &ProviderConfig) -> Result<(), ProviderError>;
+    async fn list_workflows(&self, repo: &RepositoryConfig) -> Result<Vec<Workflow>, ProviderError>;
+    async fn get_workflow_runs(&self, repo: &RepositoryConfig) -> Result<Vec<WorkflowRun>, ProviderError>;
+    async fn get_run_details(&self, run_id: &str) -> Result<WorkflowRunDetails, ProviderError>;
+    
+    fn config_schema(&self) -> JsonSchema;
+}
+```
+
+### Cargo Features Structure
+
+```toml
+[features]
+default = ["github-provider"]
+github-provider = ["octocrab"]
+gitlab-provider = []  # Future
+azure-devops-provider = []  # Future
+```
+
+### Provider Configuration System
+
+```yaml
+# yaml-language-server: $schema=./schema.json
+version: "1.0"
+app:
+  name: "GitHub Workflow Monitor"
+  polling_interval_seconds: 30
+  notifications_enabled: true
+
+# Provider-specific configuration
+providers:
+  github:
+    token_env: "GITHUB_TOKEN"
+    api_base_url: "https://api.github.com"
+    timeout_seconds: 30
+
+repositories:
+  - name: "my-project"
+    owner: "my-username"
+    provider: "github"  # Reference to provider
+    enabled: true
+    workflows:
+      - name: "CI"
+        patterns: [ "ci.yml", "continuous-integration.yml" ]
+        monitor_branches: [ "main", "master" ]
+        monitor_prs: true
+        notify_on_failure: true
+        notify_on_success: false
+
+notifications:
+  desktop:
+    enabled: true
+    timeout_seconds: 10
+    sound_enabled: true
+```
 
 ## Configuration System
 
@@ -137,23 +221,25 @@ notifications:
 
 ### Phase 1: Core Infrastructure
 
-1. **Setup Tauri project** with React frontend
-2. **Implement configuration system** with YAML schema validation
-3. **Create GitHub API client** using octocrab crate
+1. **Setup Tauri project** with Vue.js + TypeScript frontend
+2. **Implement plugin architecture** with data provider trait
+3. **Create GitHub provider** as first plugin implementation
 4. **Basic dashboard UI** showing repository list
+5. **Configuration system** with YAML schema validation
 
 ### Phase 2: Monitoring Features
 
-1. **Implement real-time polling** and state management
+1. **Implement real-time polling** using plugin trait methods
 2. **Workflow status grid** with color-coded indicators
 3. **Failed workflow details** with expandable information
 4. **Quick open functionality** to browser
+5. **Provider abstraction** in UI (hide GitHub-specific details)
 
 ### Phase 3: Notifications & Polish
 
 1. **Native notification system** using Tauri APIs
-2. **Configuration UI** for repository management
-3. **Error handling** and user feedback
+2. **Error handling** and user feedback
+3. **Plugin validation** and configuration errors
 4. **Testing** and performance optimization
 
 ## Security Considerations
@@ -186,12 +272,19 @@ notifications:
 - **Template Generation**: `pmon config init --template basic`
 - **Schema Display**: `pmon config schema`
 
+### Future Data Providers
+- **GitLab CI/CD**: Monitor GitLab pipelines
+- **Azure DevOps**: Monitor Azure Pipelines  
+- **Jenkins**: Monitor Jenkins jobs
+- **Custom Providers**: User-defined monitoring sources
+
 ### Future Enhancements
 
 - **Configuration Hot-Reloading**: File watching with `notify` crate
 - **Advanced Filtering**: More granular workflow filtering
 - **Multi-Tenant Support**: Different GitHub accounts
 - **Export/Import**: Configuration backup and sharing
+- **Dynamic Plugin Loading**: Runtime plugin discovery and loading
 
 ## Performance & Resource Usage
 
