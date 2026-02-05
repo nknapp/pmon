@@ -11,7 +11,6 @@ let
     openssl_3
     librsvg
     libsoup_3
-    libglvnd
     libcanberra-gtk3
     mesa
   ];
@@ -27,7 +26,6 @@ let
     webkitgtk_4_1
     librsvg
     libsoup_3
-    libglvnd
     libcanberra-gtk3
     mesa
   ];
@@ -38,8 +36,6 @@ pkgs.mkShell {
 
   shellHook = ''
     export LIBGL_ALWAYS_SOFTWARE=1
-    export WEBKIT_DISABLE_DMABUF_RENDERER=1
-    export WEBKIT_DISABLE_COMPOSITING_MODE=1
     export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH
     export XDG_DATA_DIRS=${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS
   '';
