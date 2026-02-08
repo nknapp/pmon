@@ -1,9 +1,28 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 
 const greetMsg = ref("");
 const name = ref("");
+const backgroundData = ref("");
+const lastUpdate = ref("");
+
+// Listen for background updates from Rust
+let unlisten: (() => void) | null = null;
+
+onMounted(async () => {
+  unlisten = await listen("background-update", (event) => {
+    backgroundData.value = JSON.stringify(event.payload, null, 2);
+    lastUpdate.value = new Date().toLocaleTimeString();
+  });
+});
+
+onUnmounted(() => {
+  if (unlisten) {
+    unlisten();
+  }
+});
 
 async function greet() {
   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -33,6 +52,13 @@ async function greet() {
       <button type="submit">Greet</button>
     </form>
     <p>{{ greetMsg }}</p>
+
+    <!-- Background job display section -->
+    <div class="background-section">
+      <h2>Background Job Updates</h2>
+      <p><strong>Last Update:</strong> {{ lastUpdate }}</p>
+      <pre class="data-display">{{ backgroundData }}</pre>
+    </div>
   </main>
 </template>
 
@@ -152,9 +178,42 @@ button {
     color: #ffffff;
     background-color: #0f0f0f98;
   }
-  button:active {
-    background-color: #0f0f0f69;
-  }
+button:active {
+  background-color: #e8e8e8;
+}
+
+input,
+button {
+  outline: none;
+}
+
+#greet-input {
+  margin-right: 5px;
+}
+
+.background-section {
+  margin-top: 2rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.data-display {
+  background-color: #000;
+  color: #0f0;
+  padding: 1rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  max-height: 200px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
 }
 
 </style>
