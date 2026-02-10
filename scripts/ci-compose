@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+export UID
+export GID
+
+echo Running with UID $UID
+
+exec docker compose "$@"
