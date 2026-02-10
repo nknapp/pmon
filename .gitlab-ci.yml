@@ -9,6 +9,8 @@ cache:
     - .cargo/registry
     - .cargo/git
     - src-tauri/target
+  fallback_keys:
+    - main
 
 variables:
   CARGO_HOME: "$CI_PROJECT_DIR/.cargo"

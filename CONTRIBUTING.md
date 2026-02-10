@@ -63,6 +63,16 @@ This will:
 - Launch the Tauri development window
 - Enable hot reload for both frontend and backend changes
 
+### Docker Compose Helper (CI)
+
+Use `./scripts/ci-compose` as a drop-in replacement for `docker compose` when running CI-style containers locally. It forwards all arguments while exporting `USER_UID` and `USER_GID` so containers can map file ownership correctly.
+
+```bash
+./scripts/ci-compose up -d
+./scripts/ci-compose run --rm app npm test
+./scripts/ci-compose down
+```
+
 ## Building
 
 ### Development Build
