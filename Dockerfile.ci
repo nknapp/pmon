@@ -1,0 +1,23 @@
+FROM node:18-bullseye
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    pkg-config \
+    libssl-dev \
+    libwebkit2gtk-4.1-0 \
+    libgtk-3-0t64 \
+    libgdk-pixbuf-2.0-0 \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal
+
+ENV CARGO_HOME=/root/.cargo
+ENV RUSTUP_HOME=/root/.rustup
+ENV PATH="$CARGO_HOME/bin:$PATH"
+
+RUN rustup toolchain install stable \
+  && rustup default stable
