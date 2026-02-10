@@ -6,7 +6,7 @@ services:
     volumes:
       - .:/workspace
     working_dir: /workspace
-    user: "${UID?Set UID (use scripts/ci-compose)}:${GID?Set GID (use scripts/ci-compose)}"
+    user: "${USER_UID?Set USER_UID (use scripts/run-local-ci)}:${USER_GID?Set USER_GID? (use scripts/run-local-ci)}"
     environment:
       CARGO_HOME: /workspace/.cargo
       RUSTUP_HOME: /usr/local/rustup

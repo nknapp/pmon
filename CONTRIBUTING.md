@@ -65,12 +65,12 @@ This will:
 
 ### Docker Compose Helper (CI)
 
-Use `./scripts/ci-compose` as a drop-in replacement for `docker compose` when running CI-style containers locally. It forwards all arguments while exporting `USER_UID` and `USER_GID` so containers can map file ownership correctly.
+Use `./scripts/ci-compose` as a drop-in replacement for `docker compose` when running CI-style containers locally. It forwards all arguments while exporting `UID` and `GID` so containers can map file ownership correctly.
 
 ```bash
-./scripts/ci-compose up -d
-./scripts/ci-compose run --rm app npm test
-./scripts/ci-compose down
+./scripts/run-local-ci up -d
+./scripts/run-local-ci run --rm app npm test
+./scripts/run-local-ci down
 ```
 
 ## Building
