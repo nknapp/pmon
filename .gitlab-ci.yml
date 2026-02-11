@@ -41,6 +41,7 @@ build:linux:
   stage: build
   image: $CI_REGISTRY_IMAGE/ci/linux-builder:latest
   script:
+    - $( mise activate --shell bash )
     - mise install
     - npm ci
     - npm run tauri build
