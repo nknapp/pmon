@@ -6,7 +6,7 @@ services:
     volumes:
       - .:/workspace
     working_dir: /workspace
-    user: "1000:1000"
+    user: "${USER_UID}:${USER_GID}"
     environment:
       CARGO_HOME: /workspace/.cargo
       MISE_TRUSTED_CONFIG_PATHS: /workspace/mise.toml

@@ -3,5 +3,4 @@ node = "24.13.0"
 rust = "1.93.0"
 
 [env]
-USER_UID = {  shell = "id -u"}
-USER_GID = {  shell = "id -g"}
+_.source="scripts/env-script.sh"
