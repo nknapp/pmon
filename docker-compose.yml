@@ -6,8 +6,7 @@ services:
     volumes:
       - .:/workspace
     working_dir: /workspace
-    user: "${USER_UID?Set USER_UID (use scripts/run-local-ci)}:${USER_GID?Set USER_GID? (use scripts/run-local-ci)}"
+    user: "1000:1000"
     environment:
       CARGO_HOME: /workspace/.cargo
-      RUSTUP_HOME: /usr/local/rustup
-      PATH: /usr/local/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:/usr/local/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      MISE_TRUSTED_CONFIG_PATHS: /workspace/mise.toml

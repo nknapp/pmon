@@ -12,11 +12,11 @@
 ### Architecture Components
 
 1.  **Core System (Rust)**
-    -   **Plugin Manager**: Orchestrates the lifecycle of data providers.
-    -   **State Store**: In-memory cache of repositories and workflow runs (persisted to disk).
-    -   **Event Bus**: Dispatches updates from plugins to the frontend via WebSocket/Tauri events.
-    -   **Notification Service**: Handles OS-level desktop notifications.
-
+    - Core business logic and state management.
+    - Provides ports for different plugins:
+      - `DataProvider` - Trait to data to plugins.
+      - `DashboardProvider` - Trait to 
+    - State store for repositories and workflow runs.
 2.  **Plugin Layer**
     -   Implements the `DataProvider` trait.
     -   Runs independently (usually in background tasks).
