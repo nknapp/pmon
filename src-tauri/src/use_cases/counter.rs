@@ -3,8 +3,8 @@ use std::time::Duration;
 
 #[derive(Clone, serde::Serialize)]
 pub struct CounterData {
-    count: u32,
-    message: String,
+    pub count: u32,
+    pub message: String,
 }
 
 pub trait StatusObserver: Send + Sync {

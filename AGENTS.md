@@ -1,5 +1,9 @@
 # GitHub Workflow Monitor - Architecture & Plugin Guide
 
+## Running Locally
+
+
+
 ## 1. High-Level Architecture Overview
 
 **pmon** is a lightweight desktop application designed to monitor CI/CD workflows. It follows a modular architecture where the core system provides the UI and state management, while specific CI providers (like GitHub) are implemented as compile-time plugins.
