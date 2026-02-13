@@ -6,7 +6,6 @@ use std::sync::{Arc, Mutex};
 
 use crate::core::StateSummaryDispatcher;
 use crate::use_cases::counter::MonitoringService;
-use tauri::Manager;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -19,18 +18,15 @@ struct AppState {}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let dispatcher = Arc::new(Mutex::new(StateSummaryDispatcher::new()));
+    let setup_dispatcher = dispatcher.clone();
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .plugin(tray_icon::init())
-        .manage(Arc::new(Mutex::new(StateSummaryDispatcher::new())))
+        .plugin(tray_icon::init_with(dispatcher.clone()))
         .manage(AppState::default())
         .invoke_handler(tauri::generate_handler![greet])
-        .setup(|app| {
-            let dispatcher = app
-                .state::<Arc<Mutex<StateSummaryDispatcher>>>()
-                .inner()
-                .clone();
-            let service = MonitoringService::new(dispatcher);
+        .setup(move |_app| {
+            let service = MonitoringService::new(setup_dispatcher.clone());
             service.create_counter();
             // Spawn background thread that runs every 2 seconds
             Ok(())

@@ -3,7 +3,7 @@ mod tray_icon;
 use std::sync::{Arc, Mutex};
 
 use crate::core::{StateSummary, StateSummaryDispatcher, StateSummarySink};
-use tauri::{menu::Menu, tray::TrayIconBuilder, AppHandle, Manager};
+use tauri::{menu::Menu, tray::TrayIconBuilder, AppHandle};
 use tray_icon::tray_icon;
 
 pub const TRAY_ICON_ID: &str = "counter-status";
@@ -26,16 +26,15 @@ fn create_controller(handle: AppHandle) -> Box<dyn StateSummarySink> {
     ))
 }
 
-pub fn init() -> tauri::plugin::TauriPlugin<tauri::Wry> {
+pub fn init_with(
+    dispatcher: Arc<Mutex<StateSummaryDispatcher>>,
+) -> tauri::plugin::TauriPlugin<tauri::Wry> {
     tauri::plugin::Builder::new("tray-icon")
-        .setup(|app, _| {
+        .setup(move |app, _| {
             setup_tray(app)?;
-            let dispatcher = app
-                .state::<Arc<Mutex<StateSummaryDispatcher>>>()
-                .inner()
-                .clone();
+            let dispatcher = dispatcher.clone();
             let mut dispatcher = dispatcher.lock().expect("dispatcher lock");
-            dispatcher.add_controller(create_controller(app.app_handle().clone()));
+            dispatcher.add_controller(create_controller(app.clone()));
             Ok(())
         })
         .build()
