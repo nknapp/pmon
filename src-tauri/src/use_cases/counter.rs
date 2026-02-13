@@ -1,39 +1,35 @@
 use std::thread;
 use std::time::Duration;
 
-#[derive(Clone, serde::Serialize)]
-pub struct CounterData {
-    pub count: u32,
-    pub message: String,
-}
-
-pub trait StatusObserver: Send + Sync {
-    fn on_update(&self, data: CounterData);
-}
+use crate::core::{NotificationState, NotificationStateController, NotificationStateDispatcher};
 
 pub struct MonitoringService {
-    // We hold the observer as a Trait Object
-    observer: Box<dyn StatusObserver>,
+    dispatcher: NotificationStateDispatcher,
 }
 
 impl MonitoringService {
-    // Constructor
-    pub fn new(observer: Box<dyn StatusObserver>) -> Self {
-        Self { observer }
+    pub fn new(dispatcher: NotificationStateDispatcher) -> Self {
+        Self { dispatcher }
     }
+
     pub fn create_counter(self) {
         let mut count = 0u32;
-        let observer = self.observer; // take ownership
+        let dispatcher = self.dispatcher;
         thread::spawn(move || loop {
             thread::sleep(Duration::from_secs(2));
             count += 1;
-            let data = CounterData {
-                count,
-                message: format!("Background task update #{}", count),
-            };
-            observer.on_update(data);
-
+            dispatcher.set_notification_state(state_for_count(count));
             println!("Sent background update #{}", count);
         });
+    }
+}
+
+fn state_for_count(count: u32) -> NotificationState {
+    if count == 0 {
+        NotificationState::Ok
+    } else if count % 2 == 0 {
+        NotificationState::OkPending
+    } else {
+        NotificationState::FailurePending
     }
 }

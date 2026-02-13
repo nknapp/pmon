@@ -1,33 +1,22 @@
 use crate::core::NotificationState;
 use tauri::image::Image;
 
-pub fn tray_icon(state: NotificationState) -> Image<'static> {
-    let count = match state {
-        NotificationState::Ok => 1,
-        NotificationState::Failure => 2,
-        NotificationState::OkPending => 3,
-        NotificationState::FailurePending => 6,
-    };
+const SIZE: u32 = 32;
+const RED: [u8; 3] = [220, 50, 50];
+const GREEN: [u8; 3] = [46, 186, 86];
+const BLUE: [u8; 3] = [60, 120, 230];
 
-    tray_icon_for_count(count)
+pub fn tray_icon(state: NotificationState) -> Image<'static> {
+    let (left, right, split) = match state {
+        NotificationState::Ok => (GREEN, GREEN, true),
+        NotificationState::Failure => (RED, RED, false),
+        NotificationState::OkPending => (GREEN, BLUE, true),
+        NotificationState::FailurePending => (RED, BLUE, false),
+    };
+    create_maybe_split_tray_icon(left, right, split)
 }
 
-fn tray_icon_for_count(count: u32) -> Image<'static> {
-    const SIZE: u32 = 32;
-    const RED: [u8; 3] = [220, 50, 50];
-    const GREEN: [u8; 3] = [46, 186, 86];
-    const BLUE: [u8; 3] = [60, 120, 230];
-
-    let (left, right, split) = if count % 6 == 0 {
-        (RED, BLUE, true)
-    } else if count % 3 == 0 {
-        (GREEN, BLUE, true)
-    } else if count % 2 == 0 {
-        (RED, RED, false)
-    } else {
-        (GREEN, GREEN, false)
-    };
-
+fn create_maybe_split_tray_icon(left: [u8; 3], right: [u8; 3], split: bool) -> Image<'static> {
     let mut rgba = vec![0u8; (SIZE * SIZE * 4) as usize];
     let center = (SIZE as f32 - 1.0) / 2.0;
     let radius = SIZE as f32 / 2.0 - 1.0;
