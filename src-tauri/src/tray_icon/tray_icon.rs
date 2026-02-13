@@ -6,7 +6,7 @@ const RED: [u8; 3] = [220, 50, 50];
 const GREEN: [u8; 3] = [46, 186, 86];
 const BLUE: [u8; 3] = [60, 120, 230];
 
-pub fn tray_icon(state: StateSummary) -> Image<'static> {
+pub(super) fn tray_icon(state: StateSummary) -> Image<'static> {
     let (left, right, split) = match state {
         StateSummary::Ok => (GREEN, GREEN, true),
         StateSummary::Failure => (RED, RED, false),
