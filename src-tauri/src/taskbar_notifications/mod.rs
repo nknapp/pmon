@@ -1,12 +1,12 @@
 mod tray_icon;
 
-use crate::core::{NotificationState, NotificationStateController};
+use crate::core::{NotificationState, NotificationStateController, NotificationStateDispatcher};
 use tauri::{menu::Menu, tray::TrayIconBuilder, App, AppHandle};
 use tray_icon::tray_icon;
 
 pub const TRAY_ICON_ID: &str = "counter-status";
 
-pub fn setup_tray(app: &App) -> Result<(), tauri::Error> {
+fn setup_tray(app: &App) -> Result<(), tauri::Error> {
     let menu = Menu::new(app)?;
     let icon = tray_icon(NotificationState::Ok);
     let _tray = TrayIconBuilder::with_id(TRAY_ICON_ID)
@@ -17,11 +17,20 @@ pub fn setup_tray(app: &App) -> Result<(), tauri::Error> {
     Ok(())
 }
 
-pub fn create_controller(handle: AppHandle) -> Box<dyn NotificationStateController> {
+fn create_controller(handle: AppHandle) -> Box<dyn NotificationStateController> {
     Box::new(TaskbarNotificationStateController::new(
         handle,
         TRAY_ICON_ID,
     ))
+}
+
+pub fn register(
+    app: &App,
+    dispatcher: &mut NotificationStateDispatcher,
+) -> Result<(), tauri::Error> {
+    setup_tray(app)?;
+    dispatcher.add_controller(create_controller(app.handle().clone()));
+    Ok(())
 }
 
 pub struct TaskbarNotificationStateController {

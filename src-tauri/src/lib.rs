@@ -21,11 +21,8 @@ pub fn run() {
         .manage(AppState::default())
         .invoke_handler(tauri::generate_handler![greet])
         .setup(|app| {
-            taskbar_notifications::setup_tray(app)?;
             let mut dispatcher = NotificationStateDispatcher::new();
-            dispatcher.add_controller(taskbar_notifications::create_controller(
-                app.handle().clone(),
-            ));
+            taskbar_notifications::register(app, &mut dispatcher)?;
             let service = MonitoringService::new(dispatcher);
             service.create_counter();
             // Spawn background thread that runs every 2 seconds
