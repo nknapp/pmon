@@ -1,12 +1,14 @@
 mod tray_icon;
 
-use crate::core::{StateSummary, StateSummarySink, StateSummaryDispatcher};
-use tauri::{menu::Menu, tray::TrayIconBuilder, App, AppHandle};
+use std::sync::{Arc, Mutex};
+
+use crate::core::{StateSummary, StateSummaryDispatcher, StateSummarySink};
+use tauri::{menu::Menu, tray::TrayIconBuilder, AppHandle, Manager};
 use tray_icon::tray_icon;
 
 pub const TRAY_ICON_ID: &str = "counter-status";
 
-fn setup_tray(app: &App) -> Result<(), tauri::Error> {
+fn setup_tray(app: &AppHandle) -> Result<(), tauri::Error> {
     let menu = Menu::new(app)?;
     let icon = tray_icon(StateSummary::Ok);
     let _tray = TrayIconBuilder::with_id(TRAY_ICON_ID)
@@ -24,13 +26,19 @@ fn create_controller(handle: AppHandle) -> Box<dyn StateSummarySink> {
     ))
 }
 
-pub fn register(
-    app: &App,
-    dispatcher: &mut StateSummaryDispatcher,
-) -> Result<(), tauri::Error> {
-    setup_tray(app)?;
-    dispatcher.add_controller(create_controller(app.handle().clone()));
-    Ok(())
+pub fn init() -> tauri::plugin::TauriPlugin<tauri::Wry> {
+    tauri::plugin::Builder::new("tray-icon")
+        .setup(|app, _| {
+            setup_tray(app)?;
+            let dispatcher = app
+                .state::<Arc<Mutex<StateSummaryDispatcher>>>()
+                .inner()
+                .clone();
+            let mut dispatcher = dispatcher.lock().expect("dispatcher lock");
+            dispatcher.add_controller(create_controller(app.app_handle().clone()));
+            Ok(())
+        })
+        .build()
 }
 
 pub struct TaskbarNotificationStateController {
