@@ -4,6 +4,11 @@
 
 
 
+## Conventions
+
+- In Rust modules, place high-level/public functions at the top, with lower-level helpers later.
+
+
 ## 1. High-Level Architecture Overview
 
 **pmon** is a lightweight desktop application designed to monitor CI/CD workflows. It follows a modular architecture where the core system provides the UI and state management, while specific CI providers (like GitHub) are implemented as compile-time plugins.

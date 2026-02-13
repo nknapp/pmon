@@ -1,3 +1,6 @@
+use std::sync;
+use sync::RwLock;
+
 mod global_state;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -13,29 +16,29 @@ pub trait StateSummarySink: Send + Sync {
 }
 
 pub struct StateSummaryDispatcher {
-    controllers: Vec<Box<dyn StateSummarySink>>,
+    controllers: RwLock<Vec<Box<dyn StateSummarySink>>>,
 }
 
 impl StateSummaryDispatcher {
     pub fn new() -> Self {
         Self {
-            controllers: Vec::new(),
+            controllers: RwLock::new(Vec::new()),
         }
     }
 
-    pub fn with_controllers(controllers: Vec<Box<dyn StateSummarySink>>) -> Self {
-        Self { controllers }
-    }
-
-    pub fn add_controller(&mut self, controller: Box<dyn StateSummarySink>) {
-        self.controllers.push(controller);
+    pub fn add_controller(&self, controller: Box<dyn StateSummarySink>) {
+        if let Ok(mut controllers) = self.controllers.write() {
+            controllers.push(controller);
+        }
     }
 }
 
 impl StateSummarySink for StateSummaryDispatcher {
     fn set_state_summary(&self, state: StateSummary) {
-        for controller in &self.controllers {
-            controller.set_state_summary(state);
+        if let Ok(controllers) = self.controllers.read() {
+            for controller in controllers.iter() {
+                controller.set_state_summary(state);
+            }
         }
     }
 }

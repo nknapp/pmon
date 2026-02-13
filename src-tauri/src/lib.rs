@@ -2,7 +2,7 @@ pub mod core;
 mod tray_icon;
 mod use_cases;
 
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use crate::core::StateSummaryDispatcher;
 use crate::use_cases::counter::MonitoringService;
@@ -18,7 +18,7 @@ struct AppState {}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let dispatcher = Arc::new(Mutex::new(StateSummaryDispatcher::new()));
+    let dispatcher = Arc::new(StateSummaryDispatcher::new());
     let setup_dispatcher = dispatcher.clone();
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())

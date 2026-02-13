@@ -1,15 +1,15 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
 use crate::core::{StateSummary, StateSummaryDispatcher, StateSummarySink};
 
 pub struct MonitoringService {
-    dispatcher: Arc<Mutex<StateSummaryDispatcher>>,
+    dispatcher: Arc<StateSummaryDispatcher>,
 }
 
 impl MonitoringService {
-    pub fn new(dispatcher: Arc<Mutex<StateSummaryDispatcher>>) -> Self {
+    pub fn new(dispatcher: Arc<StateSummaryDispatcher>) -> Self {
         Self { dispatcher }
     }
 
@@ -19,9 +19,7 @@ impl MonitoringService {
         thread::spawn(move || loop {
             thread::sleep(Duration::from_secs(2));
             count += 1;
-            if let Ok(dispatcher) = dispatcher.lock() {
-                dispatcher.set_state_summary(state_for_count(count));
-            }
+            dispatcher.set_state_summary(state_for_count(count));
             println!("Sent background update #{}", count);
         });
     }
