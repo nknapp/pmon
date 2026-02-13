@@ -1,4 +1,4 @@
-use crate::core::NotificationState;
+use crate::core::StateSummary;
 use tauri::image::Image;
 
 const SIZE: u32 = 32;
@@ -6,12 +6,12 @@ const RED: [u8; 3] = [220, 50, 50];
 const GREEN: [u8; 3] = [46, 186, 86];
 const BLUE: [u8; 3] = [60, 120, 230];
 
-pub fn tray_icon(state: NotificationState) -> Image<'static> {
+pub fn tray_icon(state: StateSummary) -> Image<'static> {
     let (left, right, split) = match state {
-        NotificationState::Ok => (GREEN, GREEN, true),
-        NotificationState::Failure => (RED, RED, false),
-        NotificationState::OkPending => (GREEN, BLUE, true),
-        NotificationState::FailurePending => (RED, BLUE, false),
+        StateSummary::Ok => (GREEN, GREEN, true),
+        StateSummary::Failure => (RED, RED, false),
+        StateSummary::OkPending => (GREEN, BLUE, true),
+        StateSummary::FailurePending => (RED, BLUE, false),
     };
     create_maybe_split_tray_icon(left, right, split)
 }

@@ -1,39 +1,41 @@
+mod global_state;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum NotificationState {
+pub enum StateSummary {
     Ok,
     OkPending,
     Failure,
     FailurePending,
 }
 
-pub trait NotificationStateController: Send + Sync {
-    fn set_notification_state(&self, state: NotificationState);
+pub trait StateSummarySink: Send + Sync {
+    fn set_state_summary(&self, state: StateSummary);
 }
 
-pub struct NotificationStateDispatcher {
-    controllers: Vec<Box<dyn NotificationStateController>>,
+pub struct StateSummaryDispatcher {
+    controllers: Vec<Box<dyn StateSummarySink>>,
 }
 
-impl NotificationStateDispatcher {
+impl StateSummaryDispatcher {
     pub fn new() -> Self {
         Self {
             controllers: Vec::new(),
         }
     }
 
-    pub fn with_controllers(controllers: Vec<Box<dyn NotificationStateController>>) -> Self {
+    pub fn with_controllers(controllers: Vec<Box<dyn StateSummarySink>>) -> Self {
         Self { controllers }
     }
 
-    pub fn add_controller(&mut self, controller: Box<dyn NotificationStateController>) {
+    pub fn add_controller(&mut self, controller: Box<dyn StateSummarySink>) {
         self.controllers.push(controller);
     }
 }
 
-impl NotificationStateController for NotificationStateDispatcher {
-    fn set_notification_state(&self, state: NotificationState) {
+impl StateSummarySink for StateSummaryDispatcher {
+    fn set_state_summary(&self, state: StateSummary) {
         for controller in &self.controllers {
-            controller.set_notification_state(state);
+            controller.set_state_summary(state);
         }
     }
 }
