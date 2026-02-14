@@ -1,0 +1,8 @@
+providers:
+  - type: github
+    token:
+      env: GITHUB_TOKEN
+    repos:
+      - name: nknapp/frontend-testing
+        main_branch: main
+        workflow: playwright.yml
