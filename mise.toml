@@ -5,5 +5,8 @@ rust = "1.93.0"
 [env]
 _.source="scripts/env-script.sh"
 
+[tasks]
+commit = "scripts/commit.sh"
+
 [shell_alias]
-wip = "scripts/commit.sh"
+wip = "mise run commit"

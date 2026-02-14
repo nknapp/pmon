@@ -7,6 +7,10 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
+    "lint:js": "eslint --ext .js,.ts,.vue src/",
+    "lint:rs": "cd src-tauri && cargo check",
+    "test:js": "eslint --ext .js,.ts,.vue src/",
+    "test:rs": "cd src-tauri && cargo test",
     "tauri": "tauri",
     "clean": "rm dist node_modules src-tauri/target -rf"
   },

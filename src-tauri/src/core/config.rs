@@ -70,3 +70,56 @@ pub fn read_config(path: impl AsRef<Path>) -> Result<Config, ConfigError> {
     let config = serde_yaml::from_str(&contents)?;
     Ok(config)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::read_config;
+    use std::fs;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    #[test]
+    fn reads_sample_config() {
+        let config = read_config("../docs/sample-config.yaml").expect("read config");
+
+        assert_eq!(config.providers.len(), 1);
+        let provider = &config.providers[0];
+        assert_eq!(provider.provider_type, "github");
+        assert_eq!(provider.token.env, "GITHUB_TOKEN");
+        assert_eq!(provider.repos.len(), 1);
+
+        let repo = &provider.repos[0];
+        assert_eq!(repo.name, "nknapp/frontend-testing");
+        assert_eq!(repo.main_branch, "main");
+        assert_eq!(repo.workflow, "playwright.yml");
+    }
+
+    #[test]
+    fn reads_inline_yaml() {
+        let yaml = r#"providers:
+  - type: github
+    token:
+      env: GITHUB_TOKEN
+    repos:
+      - name: nknapp/frontend-testing
+        main_branch: main
+        workflow: playwright.yml
+"#;
+
+        let path = write_temp_yaml(yaml).expect("write temp file");
+        let config = read_config(&path).expect("read temp config");
+
+        assert_eq!(config.providers.len(), 1);
+        assert_eq!(config.providers[0].repos.len(), 1);
+    }
+
+    fn write_temp_yaml(contents: &str) -> Result<std::path::PathBuf, std::io::Error> {
+        let mut path = std::env::temp_dir();
+        let nanos = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos();
+        path.push(format!("pmon-config-test-{}.yaml", nanos));
+        fs::write(&path, contents)?;
+        Ok(path)
+    }
+}
