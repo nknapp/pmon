@@ -2,7 +2,7 @@ mod tray_icon;
 
 use std::sync::Arc;
 
-use crate::core::{StateSummary, StateSummaryGateway, StateSummaryAdapter};
+use crate::core::{StateSummary, StateSummaryAdapter, StateSummaryGateway};
 use tauri::{menu::Menu, tray::TrayIconBuilder, AppHandle};
 use tray_icon::tray_icon;
 

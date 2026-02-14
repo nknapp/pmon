@@ -18,18 +18,16 @@ struct AppState {}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let state_summary_dispatcher = Arc::new(StateSummaryGateway::new());
-    let service = MonitoringService::new(state_summary_dispatcher.clone());
+    let state_summary_gateway = Arc::new(StateSummaryGateway::new());
+    let service = MonitoringService::new(state_summary_gateway.clone());
     service.create_counter();
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .plugin(tray_icon::init_with(state_summary_dispatcher.clone()))
+        .plugin(tray_icon::init_with(state_summary_gateway.clone()))
         .manage(AppState::default())
         .invoke_handler(tauri::generate_handler![greet])
-        .setup(move |_app| {
-            Ok(())
-        })
+        .setup(move |_app| Ok(()))
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -1,4 +1,3 @@
-
 mod state_summary;
 
-pub use state_summary::{StateSummary, StateSummaryGateway, StateSummaryAdapter};
+pub use state_summary::{StateSummary, StateSummaryAdapter, StateSummaryGateway};

@@ -2,24 +2,26 @@ use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
-use crate::core::{StateSummary, StateSummaryGateway, StateSummaryAdapter};
+use crate::core::{StateSummary, StateSummaryAdapter, StateSummaryGateway};
 
 pub struct MonitoringService {
-    dispatcher: Arc<StateSummaryGateway>,
+    state_summary_gateway: Arc<StateSummaryGateway>,
 }
 
 impl MonitoringService {
-    pub fn new(dispatcher: Arc<StateSummaryGateway>) -> Self {
-        Self { dispatcher }
+    pub fn new(state_summary_gateway: Arc<StateSummaryGateway>) -> Self {
+        Self {
+            state_summary_gateway,
+        }
     }
 
     pub fn create_counter(self) {
         let mut count = 0u32;
-        let dispatcher = self.dispatcher;
+        let state_summary_gateway = self.state_summary_gateway;
         thread::spawn(move || loop {
             thread::sleep(Duration::from_secs(2));
             count += 1;
-            dispatcher.set_state_summary(state_for_count(count));
+            state_summary_gateway.set_state_summary(state_for_count(count));
             println!("Sent background update #{}", count);
         });
     }
