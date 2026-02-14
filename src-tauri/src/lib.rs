@@ -18,17 +18,16 @@ struct AppState {}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let dispatcher = Arc::new(StateSummaryDispatcher::new());
-    let setup_dispatcher = dispatcher.clone();
+    let state_summary_dispatcher = Arc::new(StateSummaryDispatcher::new());
+    let service = MonitoringService::new(state_summary_dispatcher.clone());
+    service.create_counter();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .plugin(tray_icon::init_with(dispatcher.clone()))
+        .plugin(tray_icon::init_with(state_summary_dispatcher.clone()))
         .manage(AppState::default())
         .invoke_handler(tauri::generate_handler![greet])
         .setup(move |_app| {
-            let service = MonitoringService::new(setup_dispatcher.clone());
-            service.create_counter();
-            // Spawn background thread that runs every 2 seconds
             Ok(())
         })
         .run(tauri::generate_context!())
