@@ -7,23 +7,19 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint:js": "eslint --ext .js,.ts,.vue src/",
-    "lint:rs": "cd src-tauri && cargo check",
-    "test:js": "eslint --ext .js,.ts,.vue src/",
-    "test:rs": "cd src-tauri && cargo test",
-    "tauri": "tauri",
     "clean": "rm dist node_modules src-tauri/target -rf"
   },
   "dependencies": {
-    "vue": "^3.5.13",
     "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-opener": "^2"
+    "@tauri-apps/plugin-opener": "^2",
+    "vue": "^3.5.13"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2",
     "@vitejs/plugin-vue": "^5.2.1",
+    "oxlint": "^1.47.0",
     "typescript": "~5.6.2",
     "vite": "^6.0.3",
-    "vue-tsc": "^2.1.10",
-    "@tauri-apps/cli": "^2"
+    "vue-tsc": "^2.1.10"
   }
 }

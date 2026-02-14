@@ -3,10 +3,46 @@ node = "24.13.0"
 rust = "1.93.0"
 
 [env]
-_.source="scripts/env-script.sh"
+_.source = "scripts/env-script.sh"
 
-[tasks]
-commit = "scripts/commit.sh"
+[tasks.commit]
+description = "Commit with an auto-generated message"
+run = "scripts/commit.sh"
+
+[tasks.init]
+description = "Initialize dependencies and repo"
+run = [
+    "npm install"
+]
+
+[tasks.test]
+description = "Run automated tests"
+run = [
+    "cd src-tauri && cargo test"
+]
+
+[tasks.lint]
+description = "Run linters"
+run = [
+    "npx vue-tsc --noEmit",
+    "npx oxlint",
+    "cd src-tauri && cargo check"
+]
+
+[tasks.build]
+description = "Build project"
+run = "npx tauri build"
+
+[tasks.dev]
+description = "Run in dev mode"
+run = "npx tauri dev"
+
+[tasks.clean]
+description = "Clean node_modules and builds"
+run = [
+    "cd src-tauri && cargo clean",
+    "rm -rf node_modules dist",
+]
 
 [shell_alias]
 wip = "mise run commit"
