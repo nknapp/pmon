@@ -44,8 +44,10 @@ build:linux:
     - mise activate --shell bash >> ~/.bashrc
   script:
     - mise install
-    - npm ci
-    - npm run tauri build
+    - mise init
+    - mise lint
+    - mise test
+    - mise build
   artifacts:
     when: always
     expire_in: 14 days

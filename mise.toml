@@ -1,5 +1,6 @@
 [tools]
 node = "24.13.0"
+pnpm = "10.4.1"
 rust = "1.93.0"
 
 [env]
@@ -12,7 +13,7 @@ run = "scripts/commit.sh"
 [tasks.init]
 description = "Initialize dependencies and repo"
 run = [
-    "npm install"
+    "pnpm install"
 ]
 
 [tasks.test]
@@ -24,18 +25,18 @@ run = [
 [tasks.lint]
 description = "Run linters"
 run = [
-    "npx vue-tsc --noEmit",
-    "npx oxlint",
+    "pnpm exec vue-tsc --noEmit",
+    "pnpm exec oxlint",
     "cd src-tauri && cargo check"
 ]
 
 [tasks.build]
 description = "Build project"
-run = "npx tauri build"
+run = "pnpm exec tauri build"
 
 [tasks.dev]
 description = "Run in dev mode"
-run = "npx tauri dev"
+run = "pnpm exec tauri dev"
 
 [tasks.clean]
 description = "Clean node_modules and builds"
