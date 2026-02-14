@@ -2,14 +2,14 @@ use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
-use crate::core::{StateSummary, StateSummaryDispatcher, StateSummarySink};
+use crate::core::{StateSummary, StateSummaryGateway, StateSummaryAdapter};
 
 pub struct MonitoringService {
-    dispatcher: Arc<StateSummaryDispatcher>,
+    dispatcher: Arc<StateSummaryGateway>,
 }
 
 impl MonitoringService {
-    pub fn new(dispatcher: Arc<StateSummaryDispatcher>) -> Self {
+    pub fn new(dispatcher: Arc<StateSummaryGateway>) -> Self {
         Self { dispatcher }
     }
 

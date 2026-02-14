@@ -4,7 +4,7 @@ mod use_cases;
 
 use std::sync::Arc;
 
-use crate::core::StateSummaryDispatcher;
+use crate::core::StateSummaryGateway;
 use crate::use_cases::counter::MonitoringService;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -18,7 +18,7 @@ struct AppState {}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let state_summary_dispatcher = Arc::new(StateSummaryDispatcher::new());
+    let state_summary_dispatcher = Arc::new(StateSummaryGateway::new());
     let service = MonitoringService::new(state_summary_dispatcher.clone());
     service.create_counter();
 

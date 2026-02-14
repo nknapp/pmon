@@ -2,11 +2,11 @@ mod tray_icon;
 
 use std::sync::Arc;
 
-use crate::core::{StateSummary, StateSummaryDispatcher, StateSummarySink};
+use crate::core::{StateSummary, StateSummaryGateway, StateSummaryAdapter};
 use tauri::{menu::Menu, tray::TrayIconBuilder, AppHandle};
 use tray_icon::tray_icon;
 
-type DispatcherHandle = Arc<StateSummaryDispatcher>;
+type DispatcherHandle = Arc<StateSummaryGateway>;
 
 pub fn init_with(dispatcher: DispatcherHandle) -> tauri::plugin::TauriPlugin<tauri::Wry> {
     tauri::plugin::Builder::new("tray-icon")
@@ -30,7 +30,7 @@ impl TrayIconController {
     }
 }
 
-impl StateSummarySink for TrayIconController {
+impl StateSummaryAdapter for TrayIconController {
     fn set_state_summary(&self, state: StateSummary) {
         let icon = tray_icon(state);
         if let Some(tray) = self.handle.tray_by_id(&self.tray_id) {
@@ -58,6 +58,6 @@ fn setup_tray(app: &AppHandle) -> Result<(), tauri::Error> {
     Ok(())
 }
 
-fn create_controller(handle: AppHandle) -> Box<dyn StateSummarySink> {
+fn create_controller(handle: AppHandle) -> Box<dyn StateSummaryAdapter> {
     Box::new(TrayIconController::new(handle, TRAY_ICON_ID))
 }

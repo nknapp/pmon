@@ -8,29 +8,29 @@ pub enum StateSummary {
     FailurePending,
 }
 
-pub trait StateSummarySink: Send + Sync {
+pub trait StateSummaryAdapter: Send + Sync {
     fn set_state_summary(&self, state: StateSummary);
 }
 
-pub struct StateSummaryDispatcher {
-    controllers: RwLock<Vec<Box<dyn StateSummarySink>>>,
+pub struct StateSummaryGateway {
+    controllers: RwLock<Vec<Box<dyn StateSummaryAdapter>>>,
 }
 
-impl StateSummaryDispatcher {
+impl StateSummaryGateway {
     pub fn new() -> Self {
         Self {
             controllers: RwLock::new(Vec::new()),
         }
     }
 
-    pub fn add_controller(&self, controller: Box<dyn StateSummarySink>) {
+    pub fn add_controller(&self, controller: Box<dyn StateSummaryAdapter>) {
         if let Ok(mut controllers) = self.controllers.write() {
             controllers.push(controller);
         }
     }
 }
 
-impl StateSummarySink for StateSummaryDispatcher {
+impl StateSummaryAdapter for StateSummaryGateway {
     fn set_state_summary(&self, state: StateSummary) {
         if let Ok(controllers) = self.controllers.read() {
             for controller in controllers.iter() {
