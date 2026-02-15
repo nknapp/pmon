@@ -22,13 +22,6 @@ cache:
     - ${CI_PROJECT_NAME}
     - main
 
-variables:
-  CARGO_HOME: "$CI_PROJECT_DIR/.cargo"
-  CARGO_TARGET_DIR: "$CI_PROJECT_DIR/src-tauri/target"
-  RUSTUP_HOME: "$CI_PROJECT_DIR/.rustup"
-  PNPM_STORE_DIR: "$CI_PROJECT_DIR/.pnpm-store"
-  RUSTC_WRAPPER: "sccache"
-  SCCACHE_DIR: "$CI_PROJECT_DIR/.sccache"
 
 build:ci-image:
   stage: build-ci-image
@@ -56,6 +49,13 @@ build:ci-image:
 build:linux:
   stage: build
   image: $CI_REGISTRY_IMAGE/ci/linux-builder:latest
+  variables:
+    CARGO_HOME: "$CI_PROJECT_DIR/.cargo"
+    CARGO_TARGET_DIR: "$CI_PROJECT_DIR/src-tauri/target"
+    RUSTUP_HOME: "$CI_PROJECT_DIR/.rustup"
+    PNPM_STORE_DIR: "$CI_PROJECT_DIR/.pnpm-store"
+    RUSTC_WRAPPER: "sccache"
+    SCCACHE_DIR: "$CI_PROJECT_DIR/.sccache"
   cache:
     key: ${CI_COMMIT_REF_SLUG}
     paths:
@@ -71,6 +71,7 @@ build:linux:
       - ${CI_PROJECT_NAME}
       - main
   before_script:
+    - set
     - mise activate --shell bash >> ~/.bashrc
   script:
     - mise install
