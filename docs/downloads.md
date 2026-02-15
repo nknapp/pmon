@@ -39,7 +39,7 @@ If you host your own updates, you can generate an apt repository from the built 
 3. Add it to your systems:
 
 ```bash
-echo "deb [trusted=yes] https://your-host.example.com/pmon-apt ./" | sudo tee /etc/apt/sources.list.d/pmon.list
+echo "deb [trusted=yes] https://nknapp.gitlab.io/pmon/apt ./" | sudo tee /etc/apt/sources.list.d/pmon.list
 sudo apt update
 sudo apt install pmon
 ```

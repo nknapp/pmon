@@ -39,6 +39,10 @@ run = "pnpm exec tauri build"
 description = "Run in dev mode"
 run = "pnpm exec tauri dev"
 
+[tasks.docs_dev]
+description = "Run VitePress dev server"
+run = "pnpm exec vitepress dev docs"
+
 [tasks.clean]
 description = "Clean node_modules and builds"
 run = [
