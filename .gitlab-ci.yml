@@ -3,19 +3,29 @@ stages:
   - build
 
 cache:
-  key: ${CI_COMMIT_REF_SLUG}
+  key:
+    files:
+      - pnpm-lock.yaml
+      - src-tauri/Cargo.lock
+    prefix: ${CI_PROJECT_NAME}
   paths:
     - node_modules/
+    - .pnpm-store/
     - .cargo/registry
     - .cargo/git
+    - .rustup/
     - src-tauri/target
+  policy: pull-push
   fallback_keys:
+    - ${CI_PROJECT_NAME}
     - main
 
 variables:
   CARGO_HOME: "$CI_PROJECT_DIR/.cargo"
+  CARGO_TARGET_DIR: "$CI_PROJECT_DIR/src-tauri/target"
   RUSTUP_HOME: "$CI_PROJECT_DIR/.rustup"
   npm_config_cache: "$CI_PROJECT_DIR/.npm"
+  PNPM_STORE_DIR: "$CI_PROJECT_DIR/.pnpm-store"
 
 build:ci-image:
   stage: build-ci-image
