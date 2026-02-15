@@ -7,7 +7,6 @@ When you make changes to the code, always run the following commands and make su
 ```
 mise lint
 mise test
-mise build
 ```
 
 Do NOT delete tests because they are failing.
@@ -37,22 +36,12 @@ Do NOT delete tests because they are failing.
 2.  **Plugin Layer**
     -   Implements the `DataProvider` trait.
     -   Runs independently (usually in background tasks).
-    -   Normalizes provider-specific data into generic `Repository` and `WorkflowStream` models.
     -   Pushes updates to the Core via the `CoreApi`.
 
 3.  **Frontend (Vue.js)**
     -   **Dashboard**: Displays real-time status grids.
     -   **Store (Pinia)**: Syncs with the backend state.
     -   **Config UI**: Visual editor for `config.yaml`.
-
-### Data Flow
-1.  **Config**: User defines repositories in `config.yaml`.
-2.  **Init**: Core initializes enabled plugins (e.g., GitHub) based on config.
-3.  **Fetch**: Plugin polls external API (e.g., GitHub REST API) or listens for webhooks.
-4.  **Normalize**: Plugin converts external data to `WorkflowStream` / `Run` structs.
-5.  **Push**: Plugin calls `CoreApi::update_workflow_stream()`.
-6.  **Broadcast**: Core emits event to Frontend.
-7.  **Render**: Frontend updates the dashboard.
 
 ---
 
