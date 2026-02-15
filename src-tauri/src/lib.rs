@@ -52,6 +52,7 @@ pub fn run() {
 }
 
 fn load_providers() -> Vec<Box<dyn DataProvider>> {
+    eprintln!("Loading providers from config.yaml in directory {}", std::env::current_dir().unwrap().display());
     match read_config("config.yaml") {
         Ok(config) => providers_from_config(&config),
         Err(error) => {

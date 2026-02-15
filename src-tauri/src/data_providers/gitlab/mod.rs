@@ -62,9 +62,19 @@ impl GitlabProvider {
         let mut combined: Option<StateSummary> = None;
 
         for repo in &self.repos {
+            eprintln!(
+                "GitLab provider polling {} on {}",
+                repo.name, repo.main_branch
+            );
             match fetch_pipelines(client, &self.api_base_url, &self.token_env, repo) {
                 Ok(pipelines) => {
+                    eprintln!(
+                        "GitLab provider received {} pipelines for {}",
+                        pipelines.len(),
+                        repo.name
+                    );
                     if let Some(summary) = state_from_pipelines(&pipelines) {
+                        eprintln!("GitLab provider summary for {} is {:?}", repo.name, summary);
                         combined = Some(combine_summaries(combined, summary));
                     }
                 }
@@ -88,6 +98,7 @@ impl DataProvider for GitlabProvider {
     }
 
     fn start(&mut self, state_summary_gateway: Arc<StateSummaryGateway>) {
+        eprintln!("Starting GitLab provider");
         if self.thread_handle.is_some() {
             return;
         }
@@ -108,9 +119,22 @@ impl DataProvider for GitlabProvider {
 
                 let mut combined: Option<StateSummary> = None;
                 for repo in &repos {
+                    eprintln!(
+                        "GitLab provider polling {} on {}",
+                        repo.name, repo.main_branch
+                    );
                     match fetch_pipelines(&client, &api_base_url, &token_env, repo) {
                         Ok(pipelines) => {
+                            eprintln!(
+                                "GitLab provider received {} pipelines for {}",
+                                pipelines.len(),
+                                repo.name
+                            );
                             if let Some(summary) = state_from_pipelines(&pipelines) {
+                                eprintln!(
+                                    "GitLab provider summary for {} is {:?}",
+                                    repo.name, summary
+                                );
                                 combined = Some(combine_summaries(combined, summary));
                             }
                         }
@@ -121,6 +145,7 @@ impl DataProvider for GitlabProvider {
                 }
 
                 if let Some(summary) = combined {
+                    eprintln!("GitLab provider combined summary is {:?}", summary);
                     state_summary_gateway.set_state_summary(summary);
                 }
 
