@@ -10,3 +10,8 @@ services:
     environment:
       CARGO_HOME: /workspace/.cargo
       MISE_TRUSTED_CONFIG_PATHS: /workspace/mise.toml
+      CARGO_TARGET_DIR: "/workspace/src-tauri/target"
+      RUSTUP_HOME: "/workspace/.rustup"
+      PNPM_STORE_DIR: "/workspace/.pnpm-store"
+      RUSTC_WRAPPER: "sccache"
+      SCCACHE_DIR: "/workspace/.sccache"

@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 /.cargo/
 /.secrets.env
+/.sccache
+/.rustup

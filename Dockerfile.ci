@@ -16,6 +16,7 @@ RUN apt-get update  \
         libssl-dev \
         libwebkit2gtk-4.1-dev \
         sudo curl git ca-certificates build-essential \
+        sccache \
     && rm -rf /var/lib/apt/lists/*
 RUN adduser --disabled-password --gecos '' user
 USER user

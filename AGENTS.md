@@ -14,7 +14,8 @@ Do NOT delete tests because they are failing.
 
 ## Conventions
 
-- In Rust modules, place high-level/public functions at the top, with lower-level helpers later.
+- In Rust modules, place high-level/public functions at the top, with lower-level helpers later. 
+- The environment variables of the `ci` container in `docker-compose.yml` must match the ones in the `.gitlab-ci.yaml`.
 
 
 ## 1. High-Level Architecture Overview
