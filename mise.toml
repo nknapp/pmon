@@ -5,6 +5,7 @@ rust = "1.93.0"
 
 [env]
 _.source = "scripts/env-script.sh"
+_.file = ".secrets.env"
 
 [tasks.commit]
 description = "Commit with an auto-generated message"

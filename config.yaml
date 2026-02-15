@@ -1,0 +1,7 @@
+providers:
+  - type: gitlab
+    token:
+      env: TEST_GITLAB_TOKEN
+    repos:
+      - name: nknapp/pmon
+        main_branch: main
