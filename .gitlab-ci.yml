@@ -38,6 +38,9 @@ build:ci-image:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: "/certs"
   rules:
+    - changes:
+        - Dockerfile.ci
+      when: on_success
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: on_success
     - if: '$CI_PIPELINE_SOURCE == "web"'
