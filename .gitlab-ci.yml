@@ -1,6 +1,7 @@
 stages:
   - build-ci-image
   - build
+  - deploy
 
 cache:
   key:
@@ -70,3 +71,49 @@ build:linux:
       - src-tauri/target/release/bundle/deb/*.deb
       - src-tauri/target/release/bundle/rpm/*.rpm
       - src-tauri/target/release/pmon
+
+pages:
+  stage: deploy
+  image: $CI_REGISTRY_IMAGE/ci/linux-builder:latest
+  needs:
+    - job: build:linux
+      artifacts: true
+  before_script:
+    - mise activate --shell bash >> ~/.bashrc
+  script:
+    - mise install
+    - mise init
+    - pnpm install
+    - mkdir -p docs/public/downloads
+    - cp src-tauri/target/release/bundle/deb/*.deb docs/public/downloads/ 2>/dev/null || true
+    - cp src-tauri/target/release/bundle/rpm/*.rpm docs/public/downloads/ 2>/dev/null || true
+    - cp src-tauri/target/release/pmon docs/public/downloads/ 2>/dev/null || true
+    - |
+        node - <<'NODE'
+        const fs = require("fs");
+        const path = require("path");
+        const dir = "docs/public/downloads";
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        const files = fs.readdirSync(dir).filter((name) => name !== "manifest.json");
+        const items = files.map((name) => {
+          if (name.endsWith(".deb")) {
+            return { name, label: "Debian / Ubuntu package", kind: "deb" };
+          }
+          if (name.endsWith(".rpm")) {
+            return { name, label: "Fedora / RHEL package", kind: "rpm" };
+          }
+          if (name === "pmon") {
+            return { name, label: "Standalone Linux binary", kind: "binary" };
+          }
+          return { name, label: "Package", kind: "file" };
+        });
+        const manifest = { generatedAt: new Date().toISOString(), items };
+        fs.writeFileSync(path.join(dir, "manifest.json"), JSON.stringify(manifest, null, 2));
+        NODE
+    - pnpm exec vitepress build docs
+    - mv docs/.vitepress/dist public
+  artifacts:
+    paths:
+      - public
