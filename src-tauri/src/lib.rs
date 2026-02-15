@@ -1,4 +1,5 @@
 pub mod core;
+pub mod data_providers;
 mod tray_icon;
 mod use_cases;
 
