@@ -10,11 +10,16 @@ pub struct Config {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct ProviderConfig {
-    #[serde(rename = "type")]
-    pub provider_type: String,
-    pub token: TokenConfig,
-    pub repos: Vec<RepoConfig>,
+#[serde(tag = "type", rename_all = "lowercase")]
+pub enum ProviderConfig {
+    Github {
+        token: TokenConfig,
+        repos: Vec<GithubRepoConfig>,
+    },
+    Gitlab {
+        token: TokenConfig,
+        repos: Vec<GitlabRepoConfig>,
+    },
 }
 
 #[derive(Debug, Deserialize)]
@@ -23,10 +28,16 @@ pub struct TokenConfig {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct RepoConfig {
+pub struct GithubRepoConfig {
     pub name: String,
     pub main_branch: String,
     pub workflow: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GitlabRepoConfig {
+    pub name: String,
+    pub main_branch: String,
 }
 
 #[derive(Debug)]
@@ -83,14 +94,18 @@ mod tests {
 
         assert_eq!(config.providers.len(), 1);
         let provider = &config.providers[0];
-        assert_eq!(provider.provider_type, "github");
-        assert_eq!(provider.token.env, "GITHUB_TOKEN");
-        assert_eq!(provider.repos.len(), 1);
+        match provider {
+            super::ProviderConfig::Github { token, repos } => {
+                assert_eq!(token.env, "GITHUB_TOKEN");
+                assert_eq!(repos.len(), 1);
 
-        let repo = &provider.repos[0];
-        assert_eq!(repo.name, "nknapp/frontend-testing");
-        assert_eq!(repo.main_branch, "main");
-        assert_eq!(repo.workflow, "playwright.yml");
+                let repo = &repos[0];
+                assert_eq!(repo.name, "nknapp/frontend-testing");
+                assert_eq!(repo.main_branch, "main");
+                assert_eq!(repo.workflow, "playwright.yml");
+            }
+            super::ProviderConfig::Gitlab { .. } => panic!("expected github provider"),
+        }
     }
 
     #[test]
@@ -109,7 +124,12 @@ mod tests {
         let config = read_config(&path).expect("read temp config");
 
         assert_eq!(config.providers.len(), 1);
-        assert_eq!(config.providers[0].repos.len(), 1);
+        match &config.providers[0] {
+            super::ProviderConfig::Github { repos, .. } => {
+                assert_eq!(repos.len(), 1);
+            }
+            super::ProviderConfig::Gitlab { .. } => panic!("expected github provider"),
+        }
     }
 
     fn write_temp_yaml(contents: &str) -> Result<std::path::PathBuf, std::io::Error> {

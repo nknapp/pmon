@@ -1,7 +1,16 @@
 # GitHub Workflow Monitor - Architecture & Plugin Guide
 
-## Running Locally
+## Workflow Overview
 
+When you make changes to the code, always run the following commands and make sure there are no errors: 
+
+```
+mise lint
+mise test
+mise build
+```
+
+Do NOT delete tests because they are failing.
 
 
 ## Conventions
@@ -23,8 +32,7 @@
 1.  **Core System (Rust)**
     - Core business logic and state management.
     - Provides ports for different plugins:
-      - `DataProvider` - Trait to data to plugins.
-      - `DashboardProvider` - Trait to 
+      - `DataProvider` - Trait to retrieve data from plugins.
     - State store for repositories and workflow runs.
 2.  **Plugin Layer**
     -   Implements the `DataProvider` trait.
