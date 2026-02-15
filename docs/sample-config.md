@@ -1,3 +1,10 @@
+---
+title: Sample config
+---
+
+Use this as a starting point for `config.yaml`.
+
+```yaml
 providers:
   - type: github
     token:
@@ -8,3 +15,4 @@ providers:
       - name: nknapp/frontend-testing
         main_branch: main
         workflow: playwright.yml
+```

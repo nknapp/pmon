@@ -1,0 +1,17 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="256" height="256" rx="56" fill="url(#pmon-bg)"/>
+  <path d="M128 46C96 62 74 62 52 62V128C52 172 84 206 128 210C172 206 204 172 204 128V62C182 62 160 62 128 46Z" fill="#0F3D47"/>
+  <path d="M128 70C103 82 85 82 68 82V129C68 162 93 190 128 194C163 190 188 162 188 129V82C171 82 153 82 128 70Z" fill="url(#pmon-shield)"/>
+  <path d="M90 132H114L124 108L142 156L152 132H168" stroke="#E8F5F7" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="168" cy="132" r="6" fill="#E8F5F7"/>
+  <defs>
+    <linearGradient id="pmon-bg" x1="38" y1="18" x2="226" y2="238" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E6F4F7"/>
+      <stop offset="1" stop-color="#D2E8ED"/>
+    </linearGradient>
+    <linearGradient id="pmon-shield" x1="96" y1="82" x2="170" y2="188" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1B6A7A"/>
+      <stop offset="1" stop-color="#4FB8C8"/>
+    </linearGradient>
+  </defs>
+</svg>
