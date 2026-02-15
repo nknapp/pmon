@@ -1,8 +1,10 @@
 providers:
-  - type: github
+  - type: gitlab
     token:
-      env: GITHUB_TOKEN
+      # Load GITLAB_TOKEN from environment variable
+      env: GITLAB_TOKEN
     repos:
-      - name: nknapp/frontend-testing
+      # Show only the main branch of my pmon repository.
+      # More are not supported yet.
+      - name: nknapp/pmon
         main_branch: main
-        workflow: playwright.yml
