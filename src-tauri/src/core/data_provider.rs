@@ -1,3 +1,3 @@
 pub trait DataProvider: Send + Sync {
-    fn refresh();
+    fn refresh(&mut self);
 }
