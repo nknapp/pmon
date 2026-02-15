@@ -181,19 +181,51 @@ fn fetch_pipelines(
         api_base_url, repo_encoded, branch_encoded
     );
 
+    if gitlab_debug_enabled() {
+        eprintln!(
+            "GitLab provider request: GET {} (token env: {})",
+            url, token_env
+        );
+    }
+
     let response = client
         .get(url)
         .header("PRIVATE-TOKEN", token)
         .send()
         .map_err(|error| error.to_string())?;
 
-    let response = response
-        .error_for_status()
-        .map_err(|error| error.to_string())?;
+    let status = response.status();
+    let request_id = response
+        .headers()
+        .get("x-request-id")
+        .and_then(|value| value.to_str().ok())
+        .unwrap_or("unknown")
+        .to_string();
+    let body = response.text().map_err(|error| error.to_string())?;
 
-    response
-        .json::<Vec<Pipeline>>()
-        .map_err(|error| error.to_string())
+    if gitlab_debug_enabled() {
+        eprintln!(
+            "GitLab provider response: status {} request_id {}",
+            status, request_id
+        );
+        eprintln!("GitLab provider response body: {}", body);
+    }
+
+    if !status.is_success() {
+        return Err(format!(
+            "GitLab API returned {} (request_id {})",
+            status, request_id
+        ));
+    }
+
+    serde_json::from_str::<Vec<Pipeline>>(&body).map_err(|error| error.to_string())
+}
+
+fn gitlab_debug_enabled() -> bool {
+    matches!(
+        std::env::var("PMON_GITLAB_DEBUG").as_deref(),
+        Ok("1") | Ok("true") | Ok("TRUE") | Ok("yes") | Ok("YES")
+    )
 }
 
 fn state_from_pipelines(pipelines: &[Pipeline]) -> Option<StateSummary> {
