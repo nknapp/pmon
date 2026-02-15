@@ -53,13 +53,11 @@ build:linux:
     CARGO_HOME: "$CI_PROJECT_DIR/.cargo"
     CARGO_TARGET_DIR: "$CI_PROJECT_DIR/src-tauri/target"
     RUSTUP_HOME: "$CI_PROJECT_DIR/.rustup"
-    PNPM_STORE_DIR: "$CI_PROJECT_DIR/.pnpm-store"
     RUSTC_WRAPPER: "sccache"
     SCCACHE_DIR: "$CI_PROJECT_DIR/.sccache"
   cache:
     key: ${CI_COMMIT_REF_SLUG}
     paths:
-      - node_modules/
       - .pnpm-store/
       - .cargo/registry
       - .cargo/git
@@ -71,10 +69,12 @@ build:linux:
       - ${CI_PROJECT_NAME}
       - main
   before_script:
-    - set
     - mise activate --shell bash >> ~/.bashrc
   script:
+    - pnpm config set store-dir $CI_PROJECT_DIR/.pnpm-store
     - mise install
+    - set
+    - source ./.cargo/env
     - mise init
     - mise lint
     - mise test
