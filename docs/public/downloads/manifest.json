@@ -1,0 +1,20 @@
+{
+  "generatedAt": "placeholder",
+  "items": [
+    {
+      "name": "pmon_0.1.0_amd64.deb",
+      "label": "Debian / Ubuntu package",
+      "kind": "deb"
+    },
+    {
+      "name": "pmon-0.1.0-1.x86_64.rpm",
+      "label": "Fedora / RHEL package",
+      "kind": "rpm"
+    },
+    {
+      "name": "pmon",
+      "label": "Standalone Linux binary",
+      "kind": "binary"
+    }
+  ]
+}
