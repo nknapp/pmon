@@ -56,6 +56,20 @@ build:ci-image:
 build:linux:
   stage: build
   image: $CI_REGISTRY_IMAGE/ci/linux-builder:latest
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - .pnpm-store/
+      - .cargo/registry
+      - .cargo/git
+      - .rustup/
+      - .sccache/
+      - src-tauri/target
+    policy: pull-push
+    fallback_keys:
+      - ${CI_PROJECT_NAME}
+      - main
   before_script:
     - mise activate --shell bash >> ~/.bashrc
   script:
