@@ -1,7 +1,15 @@
 providers:
-  - type: gitlab
+## At the moment, only one provider and one repo is supported.
+#  - type: gitlab
+#    token:
+#      env: TEST_GITLAB_TOKEN
+#    repos:
+#      - name: nknapp/pmon
+#        main_branch: main
+  - type: github
     token:
-      env: TEST_GITLAB_TOKEN
+      env: TEST_GITHUB_TOKEN
     repos:
       - name: nknapp/pmon
         main_branch: main
+        workflow: ci.yml
