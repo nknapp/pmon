@@ -8,10 +8,10 @@ const BLUE: [u8; 3] = [60, 120, 230];
 
 pub(super) fn tray_icon(state: StateSummary) -> Image<'static> {
     let (left, right, split) = match state {
-        StateSummary::Ok => (GREEN, GREEN, true),
+        StateSummary::Ok => (GREEN, GREEN, false),
         StateSummary::Failure => (RED, RED, false),
         StateSummary::OkPending => (GREEN, BLUE, true),
-        StateSummary::FailurePending => (RED, BLUE, false),
+        StateSummary::FailurePending => (RED, BLUE, true),
     };
     create_maybe_split_tray_icon(left, right, split)
 }
