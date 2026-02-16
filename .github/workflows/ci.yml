@@ -17,6 +17,7 @@ env:
   PNPM_STORE_DIR: ${{ github.workspace }}/.pnpm-store
   MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}/mise.toml
   SCCACHE_DIR: ${{ github.workspace }}/.sccache
+  MISE_VERBOSE: 1
 
 jobs:
   build:
