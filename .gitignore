@@ -27,3 +27,4 @@ dist-ssr
 /.sccache
 /.rustup
 .vitepress/cache
+/docs/.vitepress/cache/
