@@ -61,7 +61,12 @@ jobs:
       - name: Test
         run: mise run test
 
+      - name: Build (macOS bundle)
+        if: matrix.os == 'macos-latest'
+        run: pnpm exec tauri build --bundles app,dmg
+
       - name: Build
+        if: matrix.os != 'macos-latest'
         run: mise run build
 
       - name: Upload build artifacts
