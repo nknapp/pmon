@@ -1,20 +1,16 @@
 # PMON - GitHub Workflow Monitor
 
-A lightweight desktop application designed to monitor CI/CD workflows with a modular plugin architecture for different CI providers.
+Monitor GitHub workflows and Gitlab pipelines and display their status in a dashboard.
 
-## Overview
+Beware: This project is highly experimental and premature.
 
-PMON provides real-time monitoring of your CI/CD pipelines through a clean, responsive desktop interface. Built with Rust (Tauri) and Vue.js for performance and cross-platform compatibility.
+At the moment, only one repository is supported.
+The frontend still shows a sample page from the initial template.
+You can see the status of the latest main pipeline in the tray-icon, nothing more.
+Config is loaded from the current working directory and the access token is read from the environment.
 
-## Features
+In other words. While the 
 
-- 🔄 **Real-time Monitoring**: Live status updates of CI/CD workflows
-- 🔌 **Plugin Architecture**: Extensible system for multiple CI providers
-- 🖥️ **Native Desktop**: Fast, lightweight application using system WebView
-- 📊 **Dashboard View**: Clear visualization of repository status
-- 🔔 **Desktop Notifications**: Instant alerts for build failures and successes
-
-## Quick Start
 
 ### Prerequisites
 
