@@ -3,6 +3,7 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
   title: "pmon",
   description: "Your personal workflow monitor.",
+  base: "/pmon/",
   lang: "en-US",
   lastUpdated: true,
   head: [
