@@ -3,10 +3,6 @@ node = "24.13.0"
 pnpm = "10.4.1"
 rust = "1.93.0"
 
-[env]
-_.source = "{% if os() != 'windows' %}scripts/env-script.sh{% endif %}"
-_.file = "{% if os() != 'windows' %}.secrets.env{% endif %}"
-
 [tasks.commit]
 description = "Commit with an auto-generated message"
 run = "scripts/commit.sh"
@@ -50,5 +46,3 @@ run = [
     "rm -rf node_modules dist",
 ]
 
-[shell_alias]
-wip = "mise run commit"

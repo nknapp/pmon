@@ -28,3 +28,4 @@ dist-ssr
 /.rustup
 .vitepress/cache
 /docs/.vitepress/cache/
+/mise.local.toml
