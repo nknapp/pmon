@@ -1,8 +1,10 @@
+mod github;
 mod gitlab;
 
 use crate::core::config::{Config, ProviderConfig};
 use crate::core::DataProvider;
 
+pub use github::GithubProvider;
 pub use gitlab::GitlabProvider;
 
 pub fn providers_from_config(config: &Config) -> Vec<Box<dyn DataProvider>> {
@@ -22,7 +24,22 @@ pub fn providers_from_config(config: &Config) -> Vec<Box<dyn DataProvider>> {
                     gitlab_repos,
                 )));
             }
-            ProviderConfig::Github { .. } => {}
+            ProviderConfig::Github { token, repos } => {
+                let github_repos = repos
+                    .iter()
+                    .map(|repo| {
+                        github::GithubRepo::new(
+                            repo.name.clone(),
+                            repo.main_branch.clone(),
+                            repo.workflow.clone(),
+                        )
+                    })
+                    .collect();
+                providers.push(Box::new(GithubProvider::new(
+                    token.env.clone(),
+                    github_repos,
+                )));
+            }
         }
     }
 
