@@ -15,6 +15,9 @@ hero:
     - theme: alt
       text: View config sample
       link: /sample-config
+    - theme: alt
+      text: GitHub
+      link: https://github.com/nknapp/pmon
 ---
 
 ## Keep every workflow in view
