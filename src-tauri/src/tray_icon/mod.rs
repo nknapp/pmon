@@ -6,8 +6,6 @@ use crate::core::{StateSummary, StateSummaryAdapter, StateSummaryGateway};
 use tauri::{menu::Menu, tray::TrayIconBuilder, AppHandle};
 use tray_icon::tray_icon;
 
-
-
 struct TrayIconController {
     handle: AppHandle,
     tray_id: String,
@@ -35,7 +33,10 @@ impl StateSummaryAdapter for TrayIconController {
     }
 }
 
-pub fn setup_with(app: &AppHandle, dispatcher: &Arc<StateSummaryGateway>) -> Result<(), tauri::Error> {
+pub fn setup_with(
+    app: &AppHandle,
+    dispatcher: &Arc<StateSummaryGateway>,
+) -> Result<(), tauri::Error> {
     setup_tray(app)?;
     dispatcher.add_controller(create_controller(app.clone()));
     Ok(())

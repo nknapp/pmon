@@ -1,12 +1,12 @@
-use std::path::{PathBuf};
-use std::sync::Arc;
-use tauri::{App, Manager};
 use crate::config_file::read_config;
 use crate::core::{DataProvider, StateSummaryGateway};
 use crate::data_providers::providers_from_config;
 use crate::tray_icon;
+use std::path::PathBuf;
+use std::sync::Arc;
+use tauri::{App, Manager};
 
-pub fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error + 'static>>{
+pub fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error + 'static>> {
     let app_handle = app.handle();
     let config_dir = match app_handle.path().config_dir() {
         Ok(path) => path,
@@ -26,12 +26,14 @@ pub fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error + 'static>>{
 }
 
 fn load_providers(config_file: &PathBuf) -> Vec<Box<dyn DataProvider>> {
-    eprintln!("Loading providers from config.yaml in directory {}", std::env::current_dir().unwrap().display());
+    if let Ok(current_dir) = std::env::current_dir() {
+        log::info!("Loading providers from config.yaml in directory {}", current_dir.display())
+    }
     match read_config(config_file) {
         Ok(config) => providers_from_config(&config),
         Err(error) => {
-            eprintln!("Failed to load config.yaml: {}", error);
-            Vec::new()
+            log::error!("Failed to load config.yaml: {}", error);
+            Err(error).unwrap()
         }
     }
 }

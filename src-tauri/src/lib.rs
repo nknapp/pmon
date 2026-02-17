@@ -1,10 +1,9 @@
 pub mod core;
 pub mod data_providers;
 mod tray_icon;
-mod use_cases;
 
-mod setup;
 mod config_file;
+mod setup;
 
 use crate::setup::setup;
 
@@ -14,9 +13,9 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    env_logger::init();
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![greet])
@@ -24,5 +23,3 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-
-

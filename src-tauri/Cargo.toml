@@ -25,6 +25,8 @@ serde_json = "1"
 serde_yaml = "0.9"
 reqwest = { version = "0.12", features = ["blocking", "json"] }
 urlencoding = "2"
+env_logger = "0.11"
+log = "0.4"
 
 [dev-dependencies]
 mockito = "1"

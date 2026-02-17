@@ -1,11 +1,11 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Config {
     pub providers: Vec<ProviderConfig>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
 pub enum ProviderConfig {
     Github {
@@ -18,12 +18,12 @@ pub enum ProviderConfig {
     },
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct TokenConfig {
     pub env: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct GithubRepoConfig {
     pub name: String,
     pub main_branch: String,
@@ -31,10 +31,14 @@ pub struct GithubRepoConfig {
     pub show_in_tray: bool,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct GitlabRepoConfig {
     pub name: String,
     pub main_branch: String,
     pub show_in_tray: bool,
 }
 
+
+pub fn create_default_config() -> Config {
+    Config { providers: vec![] }
+}
