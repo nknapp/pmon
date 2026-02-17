@@ -508,6 +508,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c5caf74d17c3aec5495110c34cc3f78644bfa89af6c8993ed4de2790e49b6499"
 dependencies = [
  "clap_builder",
+ "clap_derive",
 ]
 
 [[package]]
@@ -520,6 +521,18 @@ dependencies = [
  "anstyle",
  "clap_lex",
  "strsim",
+]
+
+[[package]]
+name = "clap_derive"
+version = "4.5.55"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a92793da1a46a5f2a02a6f4c46c6496b28c43638adea8306fcb0caa1634f24e5"
+dependencies = [
+ "heck 0.5.0",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.114",
 ]
 
 [[package]]
@@ -2927,6 +2940,7 @@ dependencies = [
 name = "pmon"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "env_logger",
  "log",
  "mockito",
@@ -2936,7 +2950,6 @@ dependencies = [
  "serde_yaml",
  "tauri",
  "tauri-build",
- "tauri-plugin-cli",
  "tauri-plugin-opener",
  "urlencoding",
 ]
@@ -4203,21 +4216,6 @@ dependencies = [
  "tauri-utils",
  "toml 0.9.12+spec-1.1.0",
  "walkdir",
-]
-
-[[package]]
-name = "tauri-plugin-cli"
-version = "2.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28e78fb2c09a81546bcd376d34db4bda5769270d00990daa9f0d6e7ac1107e25"
-dependencies = [
- "clap",
- "log",
- "serde",
- "serde_json",
- "tauri",
- "tauri-plugin",
- "thiserror 2.0.18",
 ]
 
 [[package]]

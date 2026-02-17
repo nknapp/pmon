@@ -1,15 +1,16 @@
+use crate::cli_args::{CliArgs};
 use crate::config_file::read_config;
 use crate::core::{DataProvider, StateSummaryGateway};
 use crate::data_providers::providers_from_config;
-use crate::{tray_icon};
+use crate::tray_icon;
 use std::error::Error;
 use std::path::PathBuf;
 use std::sync::Arc;
-use tauri::{App, AppHandle, Manager};
-use crate::cli_args::{cli_args_from_app, CliArgs};
 
-pub fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error + 'static>> {
-    let cli_args = cli_args_from_app(app)?;
+use tauri::{App, AppHandle, Manager};
+
+
+pub fn setup(app: &mut App, cli_args: CliArgs) -> Result<(), Box<dyn std::error::Error + 'static>> {
     let app_handle = app.handle();
     let config_file = resolve_config_file(&cli_args, &app_handle)?;
     let app_handle = app_handle;
