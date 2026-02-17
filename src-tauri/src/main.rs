@@ -4,7 +4,6 @@
 pub mod tray_icon;
 pub mod core;
 
-
 fn main() {
     pmon_lib::run()
 }
