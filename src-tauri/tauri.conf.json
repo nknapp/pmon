@@ -34,5 +34,23 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "cli": {
+      "description": "GitHub Workflow Monitor",
+      "args": [
+        {
+          "name": "edit-config",
+          "description": "Open $EDITOR with the config file",
+          "short": "e"
+        },
+        {
+          "name": "config-file",
+          "description": "Use an alternative config file",
+          "short": "c",
+          "takesValue": true
+        }
+      ]
+    }
   }
 }
