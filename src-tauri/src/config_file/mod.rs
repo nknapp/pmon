@@ -1,4 +1,4 @@
-use crate::core::config::{Config, create_default_config};
+use crate::core::config::{create_default_config, Config};
 use std::path::Path;
 use std::{fmt, fs};
 

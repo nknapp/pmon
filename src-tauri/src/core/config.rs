@@ -38,7 +38,6 @@ pub struct GitlabRepoConfig {
     pub show_in_tray: bool,
 }
 
-
 pub fn create_default_config() -> Config {
     Config { providers: vec![] }
 }
