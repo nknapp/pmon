@@ -18,7 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-rust-env
-      - run: |
+      - name: Test
+        run: |
           ./scripts/install-linux-deps.sh
           mise run init
           mise run lint
@@ -30,7 +31,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-rust-env
-      - run: |
+      - name: Build
+        run: |
           ./scripts/install-linux-deps.sh
           mise run init
           mise run build
@@ -49,7 +51,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-rust-env
-      - run: |
+      - name: Build
+        run: |
           mise run init
           mise run build
       - uses: actions/upload-artifact@v4
@@ -58,7 +61,7 @@ jobs:
           if-no-files-found: warn
           path: |
             src-tauri/target/release/bundle/dmg/*.dmg
-            src-tauri/target/release/bundle/app/*.app
+            src-tauri/target/release/bundle/macos/*.app
             src-tauri/target/release/pmon
 
   build-windows:
@@ -70,7 +73,8 @@ jobs:
     steps:
        - uses: actions/checkout@v4
        - uses: ./.github/actions/setup-rust-env
-       - run: |
+       - name: Build
+         run: |
            mise run init
            mise run build
            sccache --show-stats
