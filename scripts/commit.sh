@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# MODEL="opencode/minimax-m2.5-free"
+set -eu
+
 MODEL="opencode/gemini-3-flash"
 
 function show_output() {
@@ -13,6 +14,7 @@ function show_output() {
 }
 
 git add .
+prek
 
 cat <<PROMPT | opencode --model "${MODEL}" run
 
@@ -27,5 +29,3 @@ $( show_output git diff --staged  )
 $( show_output git log --oneline -5 )
 
 PROMPT
-
-

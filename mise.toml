@@ -1,7 +1,11 @@
 [tools]
+action-validator = "latest"
+actionlint = "latest"
 node = "24.13.0"
 pnpm = "10.4.1"
+prek = "latest"
 rust = "1.93.0"
+shellcheck = "latest"
 
 [env]
 _.file = ".secrets.env"
@@ -14,6 +18,7 @@ run = "scripts/commit.sh"
 [tasks.init]
 description = "Initialize dependencies and repo"
 run = [
+    "prek install",
     "pnpm install"
 ]
 
@@ -33,7 +38,10 @@ run = [
 
 [tasks.build]
 description = "Build project"
-run = "pnpm exec tauri build"
+run = [
+    "pnpm exec tauri build",
+    "sccache --show-stats"
+]
 
 [tasks.dev]
 description = "Run in dev mode"
@@ -49,4 +57,3 @@ run = [
     "cd src-tauri && cargo clean",
     "rm -rf node_modules dist",
 ]
-
