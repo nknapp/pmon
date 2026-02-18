@@ -1,0 +1,86 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    name: build-linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-rust-env
+      - run: |
+          ./scripts/install-linux-deps.sh
+          mise run init
+          mise run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pmon-linux
+          if-no-files-found: error
+          path: |
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/rpm/*.rpm
+
+  build-macos:
+    name: build-macos
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-rust-env
+      - run: |
+          mise run init
+          mise run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pmon-macos
+          if-no-files-found: error
+          path: |
+            src-tauri/target/release/bundle/dmg/*.dmg
+
+  build-windows:
+    name: build-windows
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+       - uses: actions/checkout@v4
+       - uses: ./.github/actions/setup-rust-env
+       - run: |
+           mise run init
+           mise run build
+       - uses: actions/upload-artifact@v4
+         with:
+           name: pmon-windows
+           if-no-files-found: error
+           path: |
+             src-tauri/target/release/bundle/msi/*.msi
+             src-tauri/target/release/bundle/nsis/*.exe
+
+  create-release:
+    name: create-release
+    needs: [build-linux, build-macos, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          gh release create "$VERSION" \
+            --title "$VERSION" \
+            --generate-notes \
+            artifacts/pmon-linux/**/* \
+            artifacts/pmon-macos/**/* \
+            artifacts/pmon-windows/**/*
