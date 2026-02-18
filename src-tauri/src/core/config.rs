@@ -28,6 +28,7 @@ pub struct GithubRepoConfig {
     pub name: String,
     pub main_branch: String,
     pub workflow: String,
+    #[serde(default = "default_show_in_tray")]
     pub show_in_tray: bool,
 }
 
@@ -35,7 +36,12 @@ pub struct GithubRepoConfig {
 pub struct GitlabRepoConfig {
     pub name: String,
     pub main_branch: String,
+    #[serde(default = "default_show_in_tray")]
     pub show_in_tray: bool,
+}
+
+fn default_show_in_tray() -> bool {
+    false
 }
 
 pub fn create_default_config() -> Config {
