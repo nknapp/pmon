@@ -15,7 +15,6 @@ runs:
         echo "PNPM_STORE_DIR=${GITHUB_WORKSPACE}/.pnpm-store" >> $GITHUB_ENV
         echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
         echo "SCCACHE_DIR=${GITHUB_WORKSPACE}/.sccache" >> $GITHUB_ENV
-        echo "SCCACHE_GHA_ENABLED=true" >> $GITHUB_ENV
         echo "MISE_TRUSTED_CONFIG_PATHS=${GITHUB_WORKSPACE}/mise.toml" >> $GITHUB_ENV
         echo "MISE_VERBOSE=1" >> $GITHUB_ENV
     - name: Setup mise
