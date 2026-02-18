@@ -1,4 +1,4 @@
-use crate::cli_args::{CliArgs};
+use crate::cli_args::CliArgs;
 use crate::config_file::read_config;
 use crate::core::{DataProvider, StateSummaryGateway};
 use crate::data_providers::providers_from_config;
@@ -8,7 +8,6 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use tauri::{App, AppHandle, Manager};
-
 
 pub fn setup(app: &mut App, cli_args: CliArgs) -> Result<(), Box<dyn std::error::Error + 'static>> {
     let app_handle = app.handle();

@@ -6,7 +6,7 @@ mod cli_args;
 mod config_file;
 mod setup;
 
-use crate::cli_args::{load_cli_args};
+use crate::cli_args::load_cli_args;
 use crate::setup::setup;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -20,10 +20,15 @@ pub fn run() {
     env_logger::init();
     let cli_args = load_cli_args();
 
-
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![greet])
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                let _ = window.hide();
+                api.prevent_close();
+            }
+        })
         .setup(move |app| setup(app, cli_args))
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

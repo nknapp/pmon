@@ -3,7 +3,11 @@ mod tray_icon;
 use std::sync::Arc;
 
 use crate::core::{StateSummary, StateSummaryAdapter, StateSummaryGateway};
-use tauri::{menu::Menu, tray::TrayIconBuilder, AppHandle};
+use tauri::{
+    menu::{Menu, MenuItem},
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+    AppHandle, Manager,
+};
 use tray_icon::tray_icon;
 
 struct TrayIconController {
@@ -43,12 +47,42 @@ pub fn setup_with(
 }
 
 fn setup_tray(app: &AppHandle) -> Result<(), tauri::Error> {
-    let menu = Menu::new(app)?;
+    let open_window = MenuItem::with_id(app, "open-window", "Open window", true, None::<&str>)?;
+    let exit = MenuItem::with_id(app, "exit", "Exit", true, None::<&str>)?;
+    let menu = Menu::with_items(app, &[&open_window, &exit])?;
     let icon = tray_icon(StateSummary::Ok);
     let _tray = TrayIconBuilder::with_id(TRAY_ICON_ID)
         .icon(icon)
         .menu(&menu)
         .tooltip("pmon")
+        .on_tray_icon_event(|tray, event| {
+            if let TrayIconEvent::Click {
+                button: MouseButton::Left,
+                button_state: MouseButtonState::Up,
+                ..
+            } = event
+            {
+                let app = tray.app_handle();
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.unminimize();
+                    let _ = window.set_focus();
+                }
+            }
+        })
+        .on_menu_event(|app, event| match event.id.as_ref() {
+            "open-window" => {
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.unminimize();
+                    let _ = window.set_focus();
+                }
+            }
+            "exit" => {
+                app.exit(0);
+            }
+            _ => {}
+        })
         .build(app)?;
     Ok(())
 }

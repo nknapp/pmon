@@ -217,7 +217,11 @@ fn fetch_workflow_runs(
         .to_string();
     let body = response.text().map_err(|error| error.to_string())?;
 
-    log::info!("GitHub API request completed: status {} request_id {}", status, request_id);
+    log::info!(
+        "GitHub API request completed: status {} request_id {}",
+        status,
+        request_id
+    );
     log::debug!("GitHub API response: {}", body);
 
     if !status.is_success() {
