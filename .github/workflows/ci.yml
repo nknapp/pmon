@@ -10,18 +10,12 @@ on:
 permissions:
   contents: read
 
-env:
-  CARGO_HOME: ${{ github.workspace }}/.cargo
-  CARGO_TARGET_DIR: ${{ github.workspace }}/src-tauri/target
-  RUSTUP_HOME: ${{ github.workspace }}/.rustup
-  PNPM_STORE_DIR: ${{ github.workspace }}/.pnpm-store
-  MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}/mise.toml
-  RUSTC_WRAPPER: sccache
-  SCCACHE_DIR: ${{ github.workspace }}/.sccache
-  SCCACHE_GHA_ENABLED: "true"
-  MISE_VERBOSE: 1
 
 jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+
   build:
     name: build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -38,45 +32,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Cache cargo registry and target
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ env.CARGO_HOME }}/registry
-            ${{ env.CARGO_HOME }}/git
-            ${{ env.CARGO_TARGET_DIR }}
-          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            cargo-${{ runner.os }}-
+      - name: Setup Rust environment
+        uses: ./.github/actions/setup-rust-env
 
       - name: Install Linux dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libwebkit2gtk-4.1-dev \
-            libayatana-appindicator3-dev \
-            librsvg2-dev \
-            patchelf
-
-      - name: Setup mise
-        uses: jdx/mise-action@v2
-        with:
-          install: true
-          cache: true
-
-      - name: Setup sccache
-        uses: mozilla-actions/sccache-action@v0.0.6
-
-      - name: Install dependencies
-        run: mise run init
-
-      - name: Lint
-        run: mise run lint
-
-      - name: Test
-        run: mise run test
+          ./scripts/install-linux-deps.sh
+          mise run init
+          mise run lint
+          mise run test
 
       - name: Build (macOS bundle)
         if: matrix.os == 'macos-latest'

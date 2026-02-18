@@ -16,8 +16,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}/mise.toml
-  PNPM_STORE_DIR: ${{ github.workspace }}/.pnpm-store
+  MISE_TRUSTED_CONFIG_PATHS: ${GITHUB_WORKSPACE}/mise.toml
+  PNPM_STORE_DIR: ${GITHUB_WORKSPACE}/.pnpm-store
 
 jobs:
   build:
